@@ -41,6 +41,8 @@ const byte oxiInt = 14;
 uint32_t elapsedTime,timeStart;
 uint32_t aun_ir_buffer[BUFFER_SIZE]; //infrared LED sensor data
 uint32_t aun_red_buffer[BUFFER_SIZE];  //red LED sensor data
+uint32_t aun_ir_bufferf[BUFFER_SIZE]; //infrared LED sensor data filtered
+uint32_t aun_red_bufferf[BUFFER_SIZE];  //red LED sensor data filtered
 float old_n_spo2;  // Previous SPO2 value
 uint8_t uch_dummy,k;
 
@@ -207,7 +209,11 @@ void loop(){
         }
     if(dataMode==1 || dataMode==2) {
       //calculate heart rate and SpO2 after BUFFER_SIZE samples (ST seconds of samples) using Robert's method
-      rf_heart_rate_and_oxygen_saturation2(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid, &ratio, &correl,1,dataTimer0); 
+      rf_heart_rate_and_oxygen_saturation2(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid, &ratio, &correl,1,dataTimer0,aun_ir_bufferf,aun_red_bufferf); 
+      Serial.print("0 :");
+      Serial.print(aun_ir_bufferf[0], DEC);
+      Serial.print("1 :");
+      Serial.println(aun_ir_bufferf[1], DEC);
       }
     }
   else if (opMode == 2) {

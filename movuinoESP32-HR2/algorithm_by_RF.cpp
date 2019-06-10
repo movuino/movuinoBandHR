@@ -117,7 +117,7 @@ void rf_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_ir_b
   }
 }
 void rf_heart_rate_and_oxygen_saturation2(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2, int8_t *pch_spo2_valid, 
-                int32_t *pn_heart_rate, int8_t *pch_hr_valid, float *ratio, float *correl,int opMode,long int startTime)
+                int32_t *pn_heart_rate, int8_t *pch_hr_valid, float *ratio, float *correl,int opMode,long int startTime,uint32_t *pun_ir_bufferf,uint32_t *pun_red_bufferf)
 /**
 * \brief        Calculate the heart rate and SpO2 level, Robert Fraczkiewicz version
 * \par          Details
@@ -142,7 +142,8 @@ void rf_heart_rate_and_oxygen_saturation2(uint32_t *pun_ir_buffer, int32_t n_ir_
   float an_x[BUFFER_SIZE], *ptr_x; //ir
   float an_y[BUFFER_SIZE], *ptr_y; //red
   long int myDataTimer;
-  extern FILE fw;
+  Serial.println(pun_ir_buffer[0]);
+  pun_ir_buffer[0]=666;
   // calculates DC mean and subtracts DC from ir and red
   f_ir_mean=0.0; 
   f_red_mean=0.0;
@@ -165,7 +166,11 @@ void rf_heart_rate_and_oxygen_saturation2(uint32_t *pun_ir_buffer, int32_t n_ir_
   for(k=0,x=-mean_X,ptr_x=an_x,ptr_y=an_y; k<n_ir_buffer_length; ++k,++x,++ptr_x,++ptr_y) {
     *ptr_x -= beta_ir*x;
     *ptr_y -= beta_red*x;
-    if(opMode==1){
+     //*pun_ir_bufferf[0]=an_x[0];
+     Serial.print(k);
+     Serial.print(" ");
+     Serial.println(an_x[k]);
+    /*if(opMode==1){
         Serial.print(F("f"));
         Serial.print(F(" "));
         if(k==0){
@@ -194,7 +199,7 @@ void rf_heart_rate_and_oxygen_saturation2(uint32_t *pun_ir_buffer, int32_t n_ir_
     Serial.print(an_x[k]);
     Serial.print(" ");
     Serial.println(an_y[k]);
-    }
+    }*/
   }
   //for(k=0;k<n_ir_buffer_length; ++k) Serial.println(an_x[k]);
     // For SpO2 calculate RMS of both AC signals. In addition, pulse detector needs raw sum of squares for IR
