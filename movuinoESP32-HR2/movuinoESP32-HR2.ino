@@ -41,14 +41,14 @@ const byte oxiInt = 14;
 uint32_t elapsedTime,timeStart;
 uint32_t aun_ir_buffer[BUFFER_SIZE]; //infrared LED sensor data
 uint32_t aun_red_buffer[BUFFER_SIZE];  //red LED sensor data
-uint32_t aun_ir_bufferf[BUFFER_SIZE]; //infrared LED sensor data filtered
-uint32_t aun_red_bufferf[BUFFER_SIZE];  //red LED sensor data filtered
+float aun_ir_bufferf[BUFFER_SIZE]; //infrared LED sensor data filtered
+float aun_red_bufferf[BUFFER_SIZE];  //red LED sensor data filtered
 float old_n_spo2;  // Previous SPO2 value
 uint8_t uch_dummy,k;
 
 //tell if we use raw data or filetered data
 int rawData=0;
-int dataMode=2; //0 : raw only ; 1 : filtered only ; 2 raw & filtered
+int dataMode=2; //0 : raw only ; 1 : filtered only ; 2 raw & filtered & spo2v & bpm
 int timerArray[BUFFER_SIZE];
 
 void read_memory() {
@@ -210,10 +210,28 @@ void loop(){
     if(dataMode==1 || dataMode==2) {
       //calculate heart rate and SpO2 after BUFFER_SIZE samples (ST seconds of samples) using Robert's method
       rf_heart_rate_and_oxygen_saturation2(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid, &ratio, &correl,1,dataTimer0,aun_ir_bufferf,aun_red_bufferf); 
-      Serial.print("0 :");
-      Serial.print(aun_ir_bufferf[0], DEC);
-      Serial.print("1 :");
-      Serial.println(aun_ir_bufferf[1], DEC);
+      for(i=0;i<BUFFER_SIZE;i++){
+        Serial.print("f ");
+        Serial.print(aun_ir_bufferf[i]);
+        Serial.print(" ");
+        Serial.print(" ");
+        Serial.println(aun_red_bufferf[i]);
+        }
+      if(dataMode==2){
+         Serial.print("spo2 ");
+         Serial.print(n_spo2);
+         Serial.print(" ");
+         Serial.println(ch_spo2_valid);
+         Serial.print("bpm ");
+         Serial.print(n_heart_rate);
+         Serial.print(" ");
+         Serial.println(ch_hr_valid);
+         Serial.print("correl ");
+         Serial.print(ratio);
+         Serial.print(" ");
+         Serial.println(correl);
+        }
+      
       }
     }
   else if (opMode == 2) {
@@ -236,5 +254,16 @@ void loop(){
             fw.print(aun_ir_buffer[i], DEC);    
             fw.println("");
             }
+      if(dataMode==1 || dataMode==2) {
+      //calculate heart rate and SpO2 after BUFFER_SIZE samples (ST seconds of samples) using Robert's method
+      rf_heart_rate_and_oxygen_saturation2(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid, &ratio, &correl,1,dataTimer0,aun_ir_bufferf,aun_red_bufferf); 
+      for(i=0;i<BUFFER_SIZE;i++){
+            fw.print("f ");
+            fw.print(aun_ir_bufferf[i]);
+            fw.print(" ");
+            fw.print(" ");
+            fw.println(aun_red_bufferf[i]);
+          }
+      }
         }    
 }
