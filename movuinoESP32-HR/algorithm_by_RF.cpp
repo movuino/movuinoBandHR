@@ -117,7 +117,7 @@ void rf_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_ir_b
   }
 }
 void rf_heart_rate_and_oxygen_saturation2(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2, int8_t *pch_spo2_valid, 
-                int32_t *pn_heart_rate, int8_t *pch_hr_valid, float *ratio, float *correl,int opMode,long int startTime,float *pun_ir_bufferf,float *pun_red_bufferf)
+                int32_t *pn_heart_rate, int8_t *pch_hr_valid, float *ratio, float *correl,int opMode,long int startTime,float *pun_ir_bufferf,float *pun_red_bufferf,float *pun_ir_bufferf2,float *pun_red_bufferf2)
 /**
 * \brief        Calculate the heart rate and SpO2 level, Robert Fraczkiewicz version
 * \par          Details
@@ -157,6 +157,10 @@ void rf_heart_rate_and_oxygen_saturation2(uint32_t *pun_ir_buffer, int32_t n_ir_
   for (k=0,ptr_x=an_x,ptr_y=an_y; k<n_ir_buffer_length; ++k,++ptr_x,++ptr_y) {
     *ptr_x = pun_ir_buffer[k] - f_ir_mean;
     *ptr_y = pun_red_buffer[k] - f_red_mean;
+     pun_ir_bufferf[k]=pun_ir_buffer[k] - f_ir_mean;
+     //Serial.println("*ptr x ");
+     //Serial.println(pun_ir_buffer[k] - f_ir_mean);
+     pun_red_bufferf[k]=pun_red_buffer[k] - f_red_mean;
   }
 
   // RF, remove linear trend (baseline leveling)
@@ -165,8 +169,8 @@ void rf_heart_rate_and_oxygen_saturation2(uint32_t *pun_ir_buffer, int32_t n_ir_
   for(k=0,x=-mean_X,ptr_x=an_x,ptr_y=an_y; k<n_ir_buffer_length; ++k,++x,++ptr_x,++ptr_y) {
     *ptr_x -= beta_ir*x;
     *ptr_y -= beta_red*x;
-    pun_ir_bufferf[k]=an_x[k];
-    pun_red_bufferf[k]=an_y[k];
+   // pun_ir_bufferf[k]=an_x[k];
+   // pun_red_bufferf[k]=an_y[k];
     //Serial.print(k);
     //Serial.print(" ");
     //Serial.println(an_x[k]);
@@ -201,7 +205,12 @@ void rf_heart_rate_and_oxygen_saturation2(uint32_t *pun_ir_buffer, int32_t n_ir_
     Serial.println(an_y[k]);
     }*/
   }
-  //for(k=0;k<n_ir_buffer_length; ++k) Serial.println(an_x[k]);
+  for(k=0;k<n_ir_buffer_length; ++k) 
+  {
+  pun_ir_bufferf2[k]=an_x[k];
+  pun_red_bufferf2[k]=an_y[k];
+  //Serial.println(an_x[k]);
+  }
     // For SpO2 calculate RMS of both AC signals. In addition, pulse detector needs raw sum of squares for IR
   f_y_ac=rf_rms(an_y,n_ir_buffer_length,&f_red_sumsq);
   f_x_ac=rf_rms(an_x,n_ir_buffer_length,&f_ir_sumsq);

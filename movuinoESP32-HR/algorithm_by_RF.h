@@ -77,7 +77,7 @@ const float mean_X = (float)(BUFFER_SIZE-1)/2.0; // Mean value of the set of int
 void rf_heart_rate_and_oxygen_saturation(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2, int8_t *pch_spo2_valid, int32_t *pn_heart_rate, 
                                         int8_t *pch_hr_valid, float *ratio, float *correl);
 void rf_heart_rate_and_oxygen_saturation2(uint32_t *pun_ir_buffer, int32_t n_ir_buffer_length, uint32_t *pun_red_buffer, float *pn_spo2, int8_t *pch_spo2_valid, int32_t *pn_heart_rate, 
-                                        int8_t *pch_hr_valid, float *ratio, float *correl, int opMode,long int startTime,float *pun_ir_bufferf,float *pun_red_bufferf);                                        
+                                        int8_t *pch_hr_valid, float *ratio, float *correl, int opMode,long int startTime,float *pun_ir_bufferf,float *pun_red_bufferf,float *pun_ir_bufferf2,float *pun_red_bufferf2);                                        
 float rf_linear_regression_beta(float *pn_x, float xmean, float sum_x2);
 float rf_autocorrelation(float *pn_x, int32_t n_size, int32_t n_lag);
 float rf_rms(float *pn_x, int32_t n_size, float *sumsq);
