@@ -51,7 +51,7 @@ uint8_t uch_dummy,k;
 
 //tell if we use raw data or filetered data
 int rawData=0;
-int dataMode=2; //0 : raw only ; 1 : filtered only ; 2 raw & filtered & spo2v & bpm
+int dataMode=0; //0 : raw only ; 1 : filtered only ; 2 raw & filtered & spo2v & bpm
 int timerArray[BUFFER_SIZE];
 
 void read_memory() {
@@ -67,17 +67,7 @@ void read_memory() {
   }
   f.close();
 }
-void blinkPixel()
-  {
-  if(!pixelState){
-    pixels.setPixelColor(0, pixels.Color(0,0,125));
-    }
-  else {
-    pixels.setPixelColor(0, pixels.Color(125,125,125));
-    }
-  pixelState=!pixelState;  
-  pixels.show();  
-  }
+
 
 void setup(){
     Serial.begin(115200);
@@ -185,7 +175,6 @@ void loop(){
   }  
   /*opMode Manager*/
   if (opMode == 1) {
-    
       //buffer length of BUFFER_SIZE stores ST seconds of samples running at FS sps
       //read BUFFER_SIZE samples, and determine the signal range
       for(i=0;i<BUFFER_SIZE;i++)
@@ -193,20 +182,20 @@ void loop(){
         while(digitalRead(oxiInt)==1);  //wait until the interrupt pin asserts
         maxim_max30102_read_fifo((aun_red_buffer+i), (aun_ir_buffer+i));  //read from MAX30102 FIFO
         if(dataMode==0 || dataMode==2)  {
-            Serial.print(F("r"));
-            Serial.print(F(" "));
+            //Serial.print(F("r"));
+            //Serial.print(F(" "));
             if(i==0) {
               dataTimer=millis()-startTimer;
               dataTimer0= dataTimer;
               }
             else dataTimer=dataTimer+40;
-            Serial.print(dataTimer, DEC);
-            Serial.print(F(" "));
-            Serial.print(i, DEC);
-            Serial.print(F(" "));
+            //Serial.print(dataTimer, DEC);
+            //Serial.print(F(" "));
+            //Serial.print(i, DEC);
+            //Serial.print(F(" "));
             Serial.print(aun_red_buffer[i], DEC);
-            Serial.print(F(" "));
-            Serial.print(aun_ir_buffer[i], DEC);    
+            //Serial.print(F(" "));
+            //Serial.print(aun_ir_buffer[i], DEC);    
             Serial.println("");
             }
         }
@@ -243,23 +232,32 @@ void loop(){
        //calculate heart rate and SpO2 after BUFFER_SIZE samples (ST seconds of samples) using Robert's method
        rf_heart_rate_and_oxygen_saturation(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid, &ratio, &correl);
        Serial.println("--RF--");
-       Serial.print(elapsedTime);
+       Serial.print(n_spo2, DEC);
        Serial.print("\t");
-       Serial.print(n_spo2);
+       Serial.print(ch_spo2_valid);
        Serial.print("\t");
        Serial.print(n_heart_rate, DEC);
        Serial.print("\t");
        Serial.println(hr_str);
+       Serial.print("\t");
+       Serial.println(ch_hr_valid);
+       Serial.print("\t");
+       Serial.println(correl);
        Serial.println("------");
      }
     }
   else if (opMode == 2) {
       //buffer length of BUFFER_SIZE stores ST seconds of samples running at FS sps
       //read BUFFER_SIZE samples, and determine the signal range
-     // if(dataMode==0 || dataMode==2)  {
-            fw.print(F("r"));
-            fw.print(F(" "));
-            if(i==0) {
+       for(i=0;i<BUFFER_SIZE;i++)
+        {
+        while(digitalRead(oxiInt)==1);  //wait until the interrupt pin asserts
+        maxim_max30102_read_fifo((aun_red_buffer+i), (aun_ir_buffer+i));  //read from MAX30102 FIFO
+        
+      if(dataMode==0 || dataMode==2)  {
+            //fw.print(F("r"));
+            //fw.print(F(" "));
+           /* if(i==0) {
               dataTimer=millis()-startTimer;
               timerArray[i]=dataTimer;
               }
@@ -267,11 +265,12 @@ void loop(){
             fw.print(timerArray[i], DEC);
             fw.print(F(" "));
             fw.print(i, DEC);
-            fw.print(F(" "));
-            fw.print(aun_red_buffer[i], DEC);
-            fw.print(F(" "));
-            fw.println(aun_ir_buffer[i], DEC);    
-      //      }
+            fw.print(F(" "));*/
+            fw.println(aun_red_buffer[i], DEC);
+           // fw.print(F(" "));
+            //fw.println(aun_ir_buffer[i], DEC);    
+            }
+        }
       if(dataMode==1 || dataMode==2) {
       //calculate heart rate and SpO2 after BUFFER_SIZE samples (ST seconds of samples) using Robert's method
       rf_heart_rate_and_oxygen_saturation2(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid, &ratio, &correl,1,dataTimer0,aun_ir_bufferf1,aun_red_bufferf1,aun_ir_bufferf2,aun_red_bufferf2); 
