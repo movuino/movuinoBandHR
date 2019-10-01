@@ -239,6 +239,19 @@ void loop(){
         }
       
       }
+     else if(dataMode==3){
+       //calculate heart rate and SpO2 after BUFFER_SIZE samples (ST seconds of samples) using Robert's method
+       rf_heart_rate_and_oxygen_saturation(aun_ir_buffer, BUFFER_SIZE, aun_red_buffer, &n_spo2, &ch_spo2_valid, &n_heart_rate, &ch_hr_valid, &ratio, &correl);
+       Serial.println("--RF--");
+       Serial.print(elapsedTime);
+       Serial.print("\t");
+       Serial.print(n_spo2);
+       Serial.print("\t");
+       Serial.print(n_heart_rate, DEC);
+       Serial.print("\t");
+       Serial.println(hr_str);
+       Serial.println("------");
+     }
     }
   else if (opMode == 2) {
       //buffer length of BUFFER_SIZE stores ST seconds of samples running at FS sps
@@ -287,5 +300,5 @@ void loop(){
          fw.print(" ");
          fw.println(correl);
       }
-        }    
+        }
 }
